@@ -18,7 +18,7 @@ import java.io.*;
 import java.util.HashSet;
 
 public class SimpleBot extends TelegramLongPollingBot {
-    private HashSet<String> UsersChat_ID = new HashSet<String>();
+    public HashSet<String> UsersChat_ID = new HashSet<String>();
 
     public static void main(String[] args) {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
@@ -36,7 +36,7 @@ public class SimpleBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "token";
+        return "230567871:AAFsg6Ijzetf5uzGY_FTmdzYNM7LfD1Z-DI";
     }
 
     @Override
@@ -46,21 +46,8 @@ public class SimpleBot extends TelegramLongPollingBot {
             if(message.getText().equals("/start")){
                 UsersChat_ID.add(message.getChat().toString());
                 sendMsg(message, "Привіт я бот Брутального футболу!");
-                BotThread t = new BotThread();
-                t.start();
-            }
-            else if (message.getText().equals("/help"))
-                sendMsg(message, "Привет, я робот");
-
-            else if (message.getText().equals("memas")){
-                java.io.File file = new java.io.File("D:\\memasy\\5GXcToqMCW8.jpg");
-
-                try{
-                    FileInputStream in = new FileInputStream(file);
-                    uploadFile(in, file.getName(), message.getChatId().toString());
-                }
-                catch (FileNotFoundException  e){
-                    e.printStackTrace();
+                try {
+                    uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", message.getChatId().toString());
                 }
                 catch (IOException e){
                     e.printStackTrace();
@@ -70,7 +57,7 @@ public class SimpleBot extends TelegramLongPollingBot {
                 sendMsg(message, "Я не знаю что ответить на это");
         }
     }
-    public HttpEntity uploadFile (FileInputStream f, String fileName, String chat_id)throws IOException{
+    public HttpEntity uploadFile (InputStream f, String fileName, String chat_id)throws IOException{
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost uploadFile = new HttpPost("https://api.telegram.org/bot"+getBotToken()+"/sendPhoto");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
