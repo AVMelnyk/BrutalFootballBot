@@ -24,6 +24,10 @@ public class SimpleBot extends TelegramLongPollingBot {
     public HashSet<String> UsersChat_ID = new HashSet<String>();
 
     public static void main(String[] args) {
+        Parser.picSize.add("src_big");
+        Parser.picSize.add("src_xbig");
+        Parser.picSize.add("src_xxbig");
+        Parser.picSize.add("src_xxxbig");
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(new SimpleBot());
@@ -69,7 +73,6 @@ public class SimpleBot extends TelegramLongPollingBot {
                     }
                     Parser.lastSendMemeTime = Parser.lastParseMemeTime;
                 }
-
             }
             else
                 sendMsg(message, "Я не знаю что ответить на это");
