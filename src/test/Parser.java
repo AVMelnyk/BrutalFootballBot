@@ -12,8 +12,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Parser {
+    public static String message = null;
+    public static int lastSendMemeTime = 0;
+    public static int lastParseMemeTime = 0;
     public static void main(String[] args) {
         getMemeInputSteam();
+        System.out.println(lastParseMemeTime);
     }
     public static String readJSON(InputStream inputStream){
         String vkJSON = null;
@@ -31,35 +35,32 @@ public class Parser {
         return vkJSON;
     }
     public static InputStream getMemeInputSteam(){
-        JSONObject obj = new JSONObject(readJSON(getInputStream("http://api.vk.com/method/wall.get?domain=fbrutal&count=5")));
+        JSONObject obj = new JSONObject(readJSON(getInputStream("http://api.vk.com/method/wall.get?domain=fbrutal&count=2")));
         JSONArray arr = obj.getJSONArray("response");
         InputStream meme = null;
-        for (int i = 3; i < arr.length(); i++){
+        for (int i = 1; i < arr.length(); i++){
+            lastParseMemeTime = arr.getJSONObject(i).getInt("date");
             try {
+                message = arr.getJSONObject(i).getString("text");
                 String text = arr.getJSONObject(i).getJSONObject("attachment").getJSONObject("photo").getString("src_xxxbig");
-                String[] parts = text.split("/");
-                System.out.println(parts[5]);
                 meme = getInputStream(text);
             }
             catch (JSONException e) {
                 try {
+                    message = arr.getJSONObject(i).getString("text");
                     String text = arr.getJSONObject(i).getJSONObject("attachment").getJSONObject("photo").getString("src_xxbig");
-                    String[] parts = text.split("/");
-                    System.out.println(parts[5]);
                     meme = getInputStream(text);
                 }
                 catch (JSONException a){
                     try {
+                        message = arr.getJSONObject(i).getString("text");
                         String text = arr.getJSONObject(i).getJSONObject("attachment").getJSONObject("photo").getString("src_xbig");
-                        String[] parts = text.split("/");
-                        System.out.println(parts[5]);
                         meme = getInputStream(text);
                     }
                     catch (JSONException b){
+                        message = arr.getJSONObject(i).getString("text");
                         String text = arr.getJSONObject(i).getJSONObject("attachment").getJSONObject("photo").getString("src_big");
-                        String[] parts = text.split("/");
-                        System.out.println(parts[5]);
-                       meme=getInputStream(text);
+                        meme=getInputStream(text);
                     }
                 }
             }

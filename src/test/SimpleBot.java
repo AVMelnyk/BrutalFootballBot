@@ -14,7 +14,10 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 
 public class SimpleBot extends TelegramLongPollingBot {
@@ -36,7 +39,7 @@ public class SimpleBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "230567871:AAFsg6Ijzetf5uzGY_FTmdzYNM7LfD1Z-DI";
+        return "token";
     }
 
     @Override
@@ -45,13 +48,28 @@ public class SimpleBot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             if(message.getText().equals("/start")){
                 UsersChat_ID.add(message.getChat().toString());
-                sendMsg(message, "Привіт я бот Брутального футболу!");
-                try {
-                    uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", message.getChatId().toString());
+                while (true){
+                    try {
+                        Parser.getMemeInputSteam();
+                        if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
+                            uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", message.getChatId().toString());
+                            sendMsg(message, Parser.message);
+                            Thread.sleep(600000);
+                        }
+                        else{
+                            Thread.sleep(600000);
+                            System.out.println("Нових мемів немає");
+                        }
+                    }
+                    catch (IOException e){
+                        e.printStackTrace();
+                    }
+                    catch (java.lang.InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    Parser.lastSendMemeTime = Parser.lastParseMemeTime;
                 }
-                catch (IOException e){
-                    e.printStackTrace();
-                }
+
             }
             else
                 sendMsg(message, "Я не знаю что ответить на это");
@@ -111,7 +129,7 @@ public class SimpleBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
-        sendMessage.setReplyToMessageId(message.getMessageId());
+        //sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
             sendMessage(sendMessage);
