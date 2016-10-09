@@ -19,9 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Set;
 
 public class SimpleBot extends TelegramLongPollingBot {
-    public HashSet<String> UsersChat_ID = new HashSet<String>();
+    public Set<String> UsersChat_ID = new HashSet<String>();
+    public String channelID = "-1001071572976";
 
     public static void main(String[] args) {
         Parser.picSize.add("src_big");
@@ -43,7 +45,7 @@ public class SimpleBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "token";
+        return "230567871:AAFsg6Ijzetf5uzGY_FTmdzYNM7LfD1Z-DI";
     }
 
     @Override
@@ -56,12 +58,12 @@ public class SimpleBot extends TelegramLongPollingBot {
                     try {
                         Parser.getMemeInputSteam();
                         if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
-                            uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", message.getChatId().toString());
-                            sendMsg(message, Parser.message);
-                            Thread.sleep(600000);
+                            uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", channelID);
+                            sendMsg(channelID, Parser.message);
+                            Thread.sleep(60000);
                         }
                         else{
-                            Thread.sleep(600000);
+                            Thread.sleep(60000);
                             System.out.println("Нових мемів немає");
                         }
                     }
@@ -75,7 +77,7 @@ public class SimpleBot extends TelegramLongPollingBot {
                 }
             }
             else
-                sendMsg(message, "Я не знаю что ответить на это");
+                System.out.println("Я не знаю что ответить на это");
         }
     }
     public HttpEntity uploadFile (InputStream f, String fileName, String chat_id)throws IOException{
@@ -128,10 +130,10 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
         return sb.toString();
     }
-    private void sendMsg(Message message, String text) {
+    private void sendMsg(String ID, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setChatId(ID);
         //sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
