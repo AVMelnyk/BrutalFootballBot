@@ -14,15 +14,9 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.*;
 
 public class SimpleBot extends TelegramLongPollingBot {
-    public Set<String> UsersChat_ID = new HashSet<String>();
     public String channelID = "-1001071572976";
 
     public static void main(String[] args) {
@@ -45,20 +39,28 @@ public class SimpleBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "230567871:AAFsg6Ijzetf5uzGY_FTmdzYNM7LfD1Z-DI";
+        String token = null;
+        try {
+            FileInputStream in = new FileInputStream("D:\\SimpleBot\\src\\test\\token.txt");
+            byte[] buffer = new byte[in.available()];
+            in.read(buffer,0,buffer.length);
+            token = new String(buffer,"UTF-8");
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        return token;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
-            if(message.getText().equals("/start")){
-                UsersChat_ID.add(message.getChat().toString());
                 while (true){
                     try {
                         Parser.getMemeInputSteam();
                         if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
-                            uploadFile(Parser.getMemeInputSteam(), "Meme.jpg", channelID);
+                            uploadFile(Parser.getMemeInputSteam(), Parser.fileName, channelID);
                             sendMsg(channelID, Parser.message);
                             Thread.sleep(60000);
                         }
@@ -75,9 +77,7 @@ public class SimpleBot extends TelegramLongPollingBot {
                     }
                     Parser.lastSendMemeTime = Parser.lastParseMemeTime;
                 }
-            }
-            else
-                System.out.println("Я не знаю что ответить на это");
+
         }
     }
     public HttpEntity uploadFile (InputStream f, String fileName, String chat_id)throws IOException{
@@ -134,7 +134,6 @@ public class SimpleBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(ID);
-        //sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
             sendMessage(sendMessage);
