@@ -5,12 +5,12 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -143,7 +143,7 @@ public class SimpleBot extends TelegramLongPollingBot {
         sendMessage.setText(text);
         try {
             sendMessage(sendMessage);
-        } catch (TelegramApiException e) {
+        } catch (org.telegram.telegrambots.exceptions.TelegramApiException e) {
             e.printStackTrace();
         }
     }
