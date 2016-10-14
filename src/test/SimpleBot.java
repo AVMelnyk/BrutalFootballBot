@@ -14,10 +14,17 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Map;
 
 public class SimpleBot extends TelegramLongPollingBot {
-    public String channelID = "-1001071572976";
+    private String channelID = null;
+    //"-1001071572976";
+    private   String token = null;
+
 
     public static void main(String[] args) {
         Parser.picSize.add("src_big");
@@ -36,18 +43,20 @@ public class SimpleBot extends TelegramLongPollingBot {
     public String getBotUsername() {
         return "BrutalFootballBot";
     }
+    public String getChannelID(){
+        if (channelID == null){
+            Map<String,String> env = System.getenv();
+            channelID = env.get("CHANNEL_ID");
+        }
+        return channelID;
+
+    }
 
     @Override
     public String getBotToken() {
-        String token = null;
-        try {
-            FileInputStream in = new FileInputStream("D:\\SimpleBot\\src\\test\\token.txt");
-            byte[] buffer = new byte[in.available()];
-            in.read(buffer,0,buffer.length);
-            token = new String(buffer,"UTF-8");
-        }
-        catch(IOException e){
-            e.printStackTrace();
+        if (token == null){
+            Map<String,String> env = System.getenv();
+            token = env.get("TELEGRAM_TOKEN");
         }
         return token;
     }
@@ -60,7 +69,7 @@ public class SimpleBot extends TelegramLongPollingBot {
                     try {
                         Parser.getMemeInputSteam();
                         if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
-                            uploadFile(Parser.getMemeInputSteam(), Parser.fileName, channelID);
+                            uploadFile(Parser.getMemeInputSteam(), Parser.fileName, getChannelID());
                             sendMsg(channelID, Parser.message);
                             Thread.sleep(60000);
                         }
