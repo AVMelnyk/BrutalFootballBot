@@ -37,10 +37,10 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
     }
 
-    @Override
     public String getBotUsername() {
         return "BrutalFootballBot";
     }
+
     public String getChannelID(){
         if (channelID == null){
             Map<String,String> env = System.getenv();
@@ -59,7 +59,6 @@ public class SimpleBot extends TelegramLongPollingBot {
         return token;
     }
 
-    @Override
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
