@@ -20,7 +20,6 @@ import java.util.Map;
 
 public class SimpleBot extends TelegramLongPollingBot {
     private String channelID = null;
-    //"-1001071572976";
     private   String token = null;
 
 
@@ -68,10 +67,10 @@ public class SimpleBot extends TelegramLongPollingBot {
                         if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
                             uploadFile(Parser.getMemeInputSteam(), Parser.fileName, getChannelID());
                             sendMsg(channelID, Parser.message);
-                            Thread.sleep(60000);
+                            Thread.sleep(60000*3);
                         }
                         else{
-                            Thread.sleep(60000);
+                            Thread.sleep(60000*3);
                             System.out.println("Нових мемів немає");
                         }
                     }
