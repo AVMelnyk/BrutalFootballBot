@@ -20,14 +20,15 @@ import java.util.Map;
 
 public class SimpleBot extends TelegramLongPollingBot {
     private String channelID = null;
-    private   String token = null;
+    private String token = null;
+    private long adminID = 163853091;
 
 
     public static void main(String[] args) {
-        Parser.picSize.add("src_big");
-        Parser.picSize.add("src_xbig");
-        Parser.picSize.add("src_xxbig");
-        Parser.picSize.add("src_xxxbig");
+        MemParser.picSize.add("src_big");
+        MemParser.picSize.add("src_xbig");
+        MemParser.picSize.add("src_xxbig");
+        MemParser.picSize.add("src_xxxbig");
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(new SimpleBot());
@@ -60,13 +61,13 @@ public class SimpleBot extends TelegramLongPollingBot {
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
-        if (message != null && message.hasText()) {
+        if (message != null && message.hasText()&&message.getChatId().equals(adminID)) {
                 while (true){
                     try {
-                        Parser.getMemeInputSteam();
-                        if (Parser.lastParseMemeTime>Parser.lastSendMemeTime){
-                            uploadFile(Parser.getMemeInputSteam(), Parser.fileName, getChannelID());
-                            sendMsg(channelID, Parser.message);
+                        MemParser.getMemeInputSteam();
+                        if (MemParser.lastParseMemeTime>MemParser.lastSendMemeTime){
+                            uploadFile(MemParser.getMemeInputSteam(), MemParser.fileName, getChannelID());
+                            sendMsg(channelID, MemParser.message);
                             Thread.sleep(60000*3);
                         }
                         else{
@@ -80,7 +81,7 @@ public class SimpleBot extends TelegramLongPollingBot {
                     catch (InterruptedException e){
                         e.printStackTrace();
                     }
-                    Parser.lastSendMemeTime = Parser.lastParseMemeTime;
+                    MemParser.lastSendMemeTime = MemParser.lastParseMemeTime;
                 }
 
         }

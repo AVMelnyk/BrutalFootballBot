@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class Parser {
+public class MemParser {
     public static String message = null;
     public static int lastSendMemeTime = 0;
     public static int lastParseMemeTime = 0;
