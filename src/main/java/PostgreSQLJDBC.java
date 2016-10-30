@@ -11,7 +11,7 @@ public class PostgreSQLJDBC {
                 Class.forName("org.postgresql.Driver");
                 c = DriverManager
                         .getConnection("jdbc:postgresql://localhost:5432/MemesDB",
-                                "postgres", "password");
+                                "postgres", "zk.,k.cfkj");
                 c.setAutoCommit(false);
                 System.out.println("Opened database successfully");
 
