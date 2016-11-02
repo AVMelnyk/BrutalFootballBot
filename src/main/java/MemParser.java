@@ -45,7 +45,6 @@ public class MemParser {
                     String[] parts = text.split("/");
                     fileName = parts[5];
                 } catch (JSONException e) {
-                    System.out.println("Інший розмір");
                 }
             }
         }

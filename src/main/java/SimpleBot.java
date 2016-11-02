@@ -19,12 +19,15 @@ public class SimpleBot extends TelegramLongPollingBot {
         MemParser.picSize.add("src_xbig");
         MemParser.picSize.add("src_xxbig");
         MemParser.picSize.add("src_xxxbig");
+
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(new SimpleBot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        new SimpleBot().broadcastMemes();
+
     }
 
     public String getBotUsername() {
@@ -48,32 +51,34 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
         return token;
     }
-
+    public  void broadcastMemes(){
+        while (true) {
+            try {
+                MemParser.getMemeInputSteam();
+                if (MemParser.lastParseMemeTime > MemParser.lastSendMemeTime) {
+                    sendMeme(MemParser.message,MemParser.getMemeInputSteam(),MemParser.fileName);
+                    Thread.sleep(60000 * 3);
+                } else {
+                    Thread.sleep(60000 * 3);
+                    System.out.println("Нових мемів немає");
+                }
+            }  catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            MemParser.lastSendMemeTime = MemParser.lastParseMemeTime;
+        }
+    }
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         if (message != null && message.hasText() && message.getChatId().equals(adminID)) {
-            while (true) {
-                try {
-                    MemParser.getMemeInputSteam();
-                    if (MemParser.lastParseMemeTime > MemParser.lastSendMemeTime) {
-                        sendPht(MemParser.message,MemParser.getMemeInputSteam());
-                        Thread.sleep(60000 * 3);
-                    } else {
-                        Thread.sleep(60000 * 3);
-                        System.out.println("Нових мемів немає");
-                    }
-                }  catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                MemParser.lastSendMemeTime = MemParser.lastParseMemeTime;
-            }
+
 
         }
     }
-    private void sendPht(String text,InputStream in) {
+    private void sendMeme(String text,InputStream in,String name) {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setCaption(text);
-        sendPhoto.setNewPhoto("a.jpg",in);
+        sendPhoto.setNewPhoto(name,in);
         sendPhoto.setChatId(getChannelID());
         try {
             sendPhoto(sendPhoto);
