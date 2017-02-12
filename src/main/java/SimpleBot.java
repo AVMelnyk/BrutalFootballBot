@@ -1,3 +1,4 @@
+import com.bfbot.entity.Meme;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
@@ -6,12 +7,14 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class SimpleBot extends TelegramLongPollingBot {
     private String channelID = null;
     private String token = null;
     private long adminID = 163853091;
+    static ArrayList<Meme> memesList = new ArrayList<Meme>();
 
 
     public static void main(String[] args) {
@@ -26,7 +29,24 @@ public class SimpleBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        new SimpleBot().broadcastMemes();
+        while (true){
+            PostgreSQLJDBC.selectMemeFromDB();
+            if (memesList.size()>0){
+                for (Meme meme : SimpleBot.memesList){
+                    new SimpleBot().postMemes(meme);
+                }
+            }
+            else
+            {
+                System.out.println("com.bfbot.entity.Meme for post does not exists");
+            }
+            try {
+                Thread.sleep(6000);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -51,12 +71,19 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
         return token;
     }
-    public  void broadcastMemes(){
+    public void onUpdateReceived(Update update) {
+        Message message = update.getMessage();
+        if (message != null && message.hasText() && message.getChatId().equals(adminID)) {
+        }
+    }
+
+    public  void postMemes(Meme meme){
         while (true) {
             try {
                 MemParser.getMemeInputSteam();
                 if (MemParser.lastParseMemeTime > MemParser.lastSendMemeTime) {
-                    sendMeme(MemParser.message,MemParser.getMemeInputSteam(),MemParser.fileName);
+                    //sendMeme(MemParser.message,MemParser.getMemeInputSteam(),MemParser.fileName);
+                    sendMeme(meme.getMemeText(),meme.getInputStream(meme.getMemeText()), meme.getMemeName());
                     Thread.sleep(60000 * 3);
                 } else {
                     Thread.sleep(60000 * 3);
@@ -66,13 +93,6 @@ public class SimpleBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
             MemParser.lastSendMemeTime = MemParser.lastParseMemeTime;
-        }
-    }
-    public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        if (message != null && message.hasText() && message.getChatId().equals(adminID)) {
-
-
         }
     }
     private void sendMeme(String text,InputStream in,String name) {
