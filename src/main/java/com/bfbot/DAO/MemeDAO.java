@@ -22,6 +22,7 @@ public class MemeDAO {
         transaction.commit();
         System.out.println("new Meme in your database "+meme.toString());
     }
+
     public Meme getMemeByID(int meme_id){
         Transaction transaction = session.beginTransaction();
         Query query = session.createQuery("FROM  Meme m WHERE m.meme_id="+meme_id );
@@ -38,6 +39,14 @@ public class MemeDAO {
         transaction.commit();
         return memeList;
     }
+    public List<Meme> getAllUnpuplicedMemes(){
+        Transaction transaction = session.beginTransaction();
+        Query query = session.createQuery("FROM  Meme m WHERE m.publiced="+false );
+        List <Meme>memeList = query.list();
+        transaction.commit();
+        return memeList;
+    }
+
     public void updateMemeStatus(Meme meme){
         Transaction transaction = session.beginTransaction();
         Meme merged;
@@ -47,6 +56,28 @@ public class MemeDAO {
             meme.setPubliced(true);
             merged = (Meme) session.merge(meme);
             session.save(merged);
+        }
+        transaction.commit();
+    }
+    public void saveOrUpdate(Meme meme){
+        Transaction transaction = session.beginTransaction();
+        Meme merged;
+        Meme candidate =
+                (Meme) session.get(Meme.class, meme.getMeme_id());
+        if (candidate!= null){
+            if (candidate.isPubliced()){
+                meme.setPubliced(true);
+                merged = (Meme) session.merge(meme);
+                session.save(merged);
+            }
+            else {
+                merged = (Meme) session.merge(meme);
+                session.save(merged);
+            }
+        }
+        else{
+            session.save(meme);
+            System.out.println("new Meme in your database "+meme.toString());
         }
         transaction.commit();
     }

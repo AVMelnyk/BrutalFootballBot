@@ -34,9 +34,10 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
         Session session = HibernateUtil.getSessionFactory().openSession();
         MemeDAO memeDAO   =  new MemeDAO(session);
-        List<Meme> memeList   = memeDAO.getAllMemes();
+        List<Meme> memeList   = memeDAO.getAllUnpuplicedMemes();
         for (Meme meme: memeList){
             new SimpleBot().postMemes(meme);
+            memeDAO.updateMemeStatus(meme);
         }
         session.close();
 
