@@ -46,9 +46,6 @@ public class Meme {
     public void setPubliced(boolean publiced) {
         this.publiced = publiced;
     }
-    public static void main(String[] args) {
-        System.out.println();
-    }
     public String getMemeText() {
         return memeText;
     }

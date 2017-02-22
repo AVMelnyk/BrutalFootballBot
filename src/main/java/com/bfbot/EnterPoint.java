@@ -6,25 +6,21 @@ import com.bfbot.entity.Meme;
 import com.bfbot.persistence.HibernateUtil;
 import org.hibernate.Session;
 
+import java.util.List;
+
 public class EnterPoint {
     public static void main(String[] args) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Meme meme = new Meme();
-        meme.setLink("fd");
-        meme.setMeme_id(124);
-        meme.setLikes(323);
-        //set
+        meme.setMeme_id(1924314);
+        meme.setLikes(335);
+        meme.setLink("https://pp.vk.me/c7001/v7001102/2d721/_IgBFvOj-js.jpg");
+        meme.setMemeName("IgBFvOj-js.jpg");
+        meme.setPubliced(true);
         MemeDAO memeDAO  = new MemeDAO(session);
-        //memeDAO.addMeme(meme);
-        System.out.println(memeDAO.getMemeByID(124).toString());
-        //session.save(meme);
-        /*List<Meme> newlist = memeDAO.getAllMemes();
-        for (Meme m: newlist
-             ) {
-            System.out.println(m.toString());
-        }*/
-        //memeDAO.updateMemeStatus(meme);
-        memeDAO.deleteMemeById(124);
+        List<Meme>memeList = memeDAO.getAllMemes();
+        memeDAO.addMeme(meme);
+
         session.close();
     }
 }

@@ -1,4 +1,8 @@
+import com.bfbot.DAO.MemeDAO;
 import com.bfbot.entity.Meme;
+import com.bfbot.persistence.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.*;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
@@ -8,7 +12,9 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
 
 public class SimpleBot extends TelegramLongPollingBot {
     private String channelID = null;
@@ -18,10 +24,7 @@ public class SimpleBot extends TelegramLongPollingBot {
 
 
     public static void main(String[] args) {
-        MemParser.picSize.add("src_big");
-        MemParser.picSize.add("src_xbig");
-        MemParser.picSize.add("src_xxbig");
-        MemParser.picSize.add("src_xxxbig");
+
 
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
@@ -29,28 +32,17 @@ public class SimpleBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        while (true){
-            PostgreSQLJDBC.selectMemeFromDB();
-            if (memesList.size()>0){
-                for (Meme meme : SimpleBot.memesList){
-                    new SimpleBot().postMemes(meme);
-                }
-            }
-            else
-            {
-                System.out.println("com.bfbot.entity.Meme for post does not exists");
-            }
-            try {
-                Thread.sleep(6000);
-            }
-            catch (InterruptedException e){
-                e.printStackTrace();
-            }
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        MemeDAO memeDAO   =  new MemeDAO(session);
+        List<Meme> memeList   = memeDAO.getAllMemes();
+        for (Meme meme: memeList){
+            new SimpleBot().postMemes(meme);
         }
+        session.close();
 
     }
 
-    public String getBotUsername() {
+     public String getBotUsername() {
         return "BrutalFootballBot";
     }
 
@@ -78,22 +70,7 @@ public class SimpleBot extends TelegramLongPollingBot {
     }
 
     public  void postMemes(Meme meme){
-        while (true) {
-            try {
-                MemParser.getMemeInputSteam();
-                if (MemParser.lastParseMemeTime > MemParser.lastSendMemeTime) {
-                    //sendMeme(MemParser.message,MemParser.getMemeInputSteam(),MemParser.fileName);
-                    sendMeme(meme.getMemeText(),meme.getInputStream(meme.getMemeText()), meme.getMemeName());
-                    Thread.sleep(60000 * 3);
-                } else {
-                    Thread.sleep(60000 * 3);
-                    System.out.println("Нових мемів немає");
-                }
-            }  catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            MemParser.lastSendMemeTime = MemParser.lastParseMemeTime;
-        }
+        sendMeme(meme.getMemeText(),meme.getInputStream(meme.getLink()), meme.getMemeName());
     }
     private void sendMeme(String text,InputStream in,String name) {
         SendPhoto sendPhoto = new SendPhoto();
@@ -108,5 +85,4 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
 
     }
-
 }

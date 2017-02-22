@@ -35,6 +35,7 @@ public class MemeDAO {
         Transaction transaction = session.beginTransaction();
         Query query = session.createQuery("from Meme ");
         List <Meme>memeList = query.list();
+        transaction.commit();
         return memeList;
     }
     public void updateMemeStatus(Meme meme){
@@ -48,7 +49,6 @@ public class MemeDAO {
             session.save(merged);
         }
         transaction.commit();
-        System.out.println("new Meme in your database"+meme.toString());
     }
     public void deleteMemeById(int meme_id){
         Transaction transaction = null;
@@ -57,11 +57,14 @@ public class MemeDAO {
             Meme meme =
                     (Meme) session.get(Meme.class, meme_id);
             session.delete(meme);
-            transaction.commit();
+            if (!transaction.wasCommitted()){
+                transaction.commit();
+            }
         }catch (HibernateException e) {
-            if (transaction!=null) transaction.rollback();
+            transaction.rollback();
             e.printStackTrace();
         }
+
     }
 
 }
