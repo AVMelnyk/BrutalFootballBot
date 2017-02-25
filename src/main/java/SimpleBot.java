@@ -10,6 +10,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class SimpleBot extends TelegramLongPollingBot {
     static ArrayList<Meme> memesList = new ArrayList<Meme>();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
 
 
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
@@ -32,14 +33,24 @@ public class SimpleBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        MemeDAO memeDAO   =  new MemeDAO(session);
-        List<Meme> memeList   = memeDAO.getAllUnpuplicedMemes();
-        for (Meme meme: memeList){
-            new SimpleBot().postMemes(meme);
-            memeDAO.updateMemeStatus(meme);
+        while(true){
+            MemeParser.putMemeInDB();
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            MemeDAO memeDAO   =  new MemeDAO(session);
+            List<Meme> memeList   = memeDAO.getAllUnpuplicedMemes();
+            for (Meme meme: memeList){
+                new SimpleBot().postMemes(meme);
+                memeDAO.updateMemeStatus(meme);
+            }
+            session.close();
+            try{
+                Thread.sleep(5*60*1000);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
         }
-        session.close();
+
 
     }
 

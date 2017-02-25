@@ -41,7 +41,7 @@ public class MemeDAO {
     }
     public List<Meme> getAllUnpuplicedMemes(){
         Transaction transaction = session.beginTransaction();
-        Query query = session.createQuery("FROM  Meme m WHERE m.publiced="+false );
+        Query query = session.createQuery("FROM  Meme m WHERE m.publiced="+false);
         List <Meme>memeList = query.list();
         transaction.commit();
         return memeList;

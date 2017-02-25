@@ -14,20 +14,24 @@ import java.util.List;
 public class MemeParser {
 
     public static void main(String[] args) throws IOException{
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        MemeDAO memeDAO   =  new MemeDAO(session);
-        for (Meme meme: parseMeme()){
-            //memeDAO.deleteMemeById(meme.getMeme_id());
-            //memeDAO.addMeme(meme);
-            //memeDAO.updateMemeStatus(meme);
-            memeDAO.saveOrUpdate(meme);
-        }
-        session.close();
+
+    }
+    public  static void putMemeInDB()throws IOException{
+
+            System.out.println("Додаємо мемаси");
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            MemeDAO memeDAO   =  new MemeDAO(session);
+            for (Meme meme: parseMeme()){
+                memeDAO.saveOrUpdate(meme);
+            }
+            session.close();
+
+
     }
 
     public static List<Meme> parseMeme() throws IOException{
         List<Meme> memeList  = new ArrayList<Meme>();
-        JSONObject jsonObject = readJsonFromUrl("https://api.vk.com/api.php?oauth=1&method=wall.get&domain=fbrutal&count=50");
+        JSONObject jsonObject = readJsonFromUrl("https://api.vk.com/api.php?oauth=1&method=wall.get&domain=fbrutal&count=10");
         JSONArray array  = jsonObject.getJSONArray("response");
         for (int i = 1; i < array.length(); i++) {
             JSONObject object = (JSONObject) array.get(i);
