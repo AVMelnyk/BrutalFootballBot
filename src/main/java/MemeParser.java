@@ -25,6 +25,7 @@ public class MemeParser {
                 memeDAO.saveOrUpdate(meme);
             }
             session.close();
+        System.out.println("Додали");
     }
 
     public static List<Meme> parseMeme() throws IOException{
@@ -49,10 +50,9 @@ public class MemeParser {
                 for (int j = 0; j < picSize.size(); j++) {
                     try {
                          photoLink  = photo.getString(picSize.get(j));
-                        System.out.println(picSize.get(j));
 
                     } catch (JSONException e) {
-                        System.out.println("Інший розмір");
+
                     }
                 }
                 String[] parts = photoLink.split("/");

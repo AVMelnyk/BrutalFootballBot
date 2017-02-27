@@ -106,6 +106,10 @@
                     <mainClass>SimpleBot</mainClass>
                     <name>worker</name>
                 </program>
+				<program>
+					<mainClass>MemeParser</mainClass>
+					<name>parser</name>
+				</program>
             </programs>
           </configuration>
           <executions>

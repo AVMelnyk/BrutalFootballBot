@@ -10,8 +10,7 @@
         <property name="hibernate.connection.username">yfhlycpqmbbtsx</property>
         <property name="hibernate.connection.password">d34c50a8800b230328855f60d642dc9b862a445e2afd58d924d9ca677a301fc1</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
-
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <mapping class="com.bfbot.entity.Meme"></mapping>
     </session-factory>
 </hibernate-configuration>

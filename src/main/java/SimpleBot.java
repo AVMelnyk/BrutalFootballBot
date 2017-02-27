@@ -24,7 +24,9 @@ public class SimpleBot extends TelegramLongPollingBot {
     static ArrayList<Meme> memesList = new ArrayList<Meme>();
 
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
+
+
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(new SimpleBot());
@@ -32,19 +34,26 @@ public class SimpleBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
         SimpleBot bot = new SimpleBot();
-            MemeParser.putMemeInDB();
+        while (true) {
             Session session = HibernateUtil.getSessionFactory().openSession();
-            MemeDAO memeDAO  =  new MemeDAO(session);
-            List<Meme> memeList  = memeDAO.getAllUnpuplicedMemes();
-            for (Meme meme: memeList){
+            MemeDAO memeDAO = new MemeDAO(session);
+            List<Meme> memeList = memeDAO.getAllUnpuplicedMemes();
+            for (Meme meme : memeList) {
                 bot.sendMeme(meme);
                 memeDAO.updateMemeStatus(meme);
             }
             session.close();
+            try {
+                Thread.sleep(5 * 60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
-     public String getBotUsername() {
-
+    public String getBotUsername() {
         return "BrutalFootballBot";
     }
 
@@ -54,6 +63,7 @@ public class SimpleBot extends TelegramLongPollingBot {
             channelID = env.get("CHANNEL_ID");
         }
         return channelID;
+
     }
 
     @Override
@@ -64,6 +74,7 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
         return token;
     }
+
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         if (message != null && message.hasText() && message.getChatId().equals(adminID)) {
@@ -74,14 +85,12 @@ public class SimpleBot extends TelegramLongPollingBot {
 
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setCaption(meme.getMemeText());
-        sendPhoto.setNewPhoto(meme.getMemeName(),meme.getInputStream(meme.getLink()));
+        sendPhoto.setNewPhoto(meme.getMemeName(), meme.getInputStream(meme.getLink()));
         sendPhoto.setChatId(getChannelID());
         try {
             sendPhoto(sendPhoto);
-        }
-        catch (org.telegram.telegrambots.exceptions.TelegramApiException e){
+        } catch (org.telegram.telegrambots.exceptions.TelegramApiException e) {
             e.printStackTrace();
         }
-
     }
 }
