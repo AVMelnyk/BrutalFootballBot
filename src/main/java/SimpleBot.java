@@ -25,36 +25,26 @@ public class SimpleBot extends TelegramLongPollingBot {
 
 
     public static void main(String[] args) throws IOException{
-
-
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(new SimpleBot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        while(true){
+        SimpleBot bot = new SimpleBot();
             MemeParser.putMemeInDB();
             Session session = HibernateUtil.getSessionFactory().openSession();
-            MemeDAO memeDAO   =  new MemeDAO(session);
-            List<Meme> memeList   = memeDAO.getAllUnpuplicedMemes();
+            MemeDAO memeDAO  =  new MemeDAO(session);
+            List<Meme> memeList  = memeDAO.getAllUnpuplicedMemes();
             for (Meme meme: memeList){
-                new SimpleBot().postMemes(meme);
+                bot.sendMeme(meme);
                 memeDAO.updateMemeStatus(meme);
             }
             session.close();
-            try{
-                Thread.sleep(5*60*1000);
-            }
-            catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-
-
     }
 
      public String getBotUsername() {
+
         return "BrutalFootballBot";
     }
 
@@ -64,7 +54,6 @@ public class SimpleBot extends TelegramLongPollingBot {
             channelID = env.get("CHANNEL_ID");
         }
         return channelID;
-
     }
 
     @Override
@@ -81,13 +70,11 @@ public class SimpleBot extends TelegramLongPollingBot {
         }
     }
 
-    public  void postMemes(Meme meme){
-        sendMeme(meme.getMemeText(),meme.getInputStream(meme.getLink()), meme.getMemeName());
-    }
-    private void sendMeme(String text,InputStream in,String name) {
+    private void sendMeme(Meme meme) {
+
         SendPhoto sendPhoto = new SendPhoto();
-        sendPhoto.setCaption(text);
-        sendPhoto.setNewPhoto(name,in);
+        sendPhoto.setCaption(meme.getMemeText());
+        sendPhoto.setNewPhoto(meme.getMemeName(),meme.getInputStream(meme.getLink()));
         sendPhoto.setChatId(getChannelID());
         try {
             sendPhoto(sendPhoto);
