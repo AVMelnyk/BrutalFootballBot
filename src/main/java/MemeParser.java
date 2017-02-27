@@ -14,7 +14,7 @@ import java.util.List;
 public class MemeParser {
     private static ArrayList<String> picSize = new ArrayList<String>();
     public static void main(String[] args) throws IOException{
-		putMemeInDB;
+		putMemeInDB();
     }
     public  static void putMemeInDB()throws IOException{
 
